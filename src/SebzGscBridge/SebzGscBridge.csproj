@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>SebzGscBridge</AssemblyName>
+    <PackageId>Sebz.IW4MAdmin.GscBridge</PackageId>
+    <Authors>Sebz</Authors>
+    <Product>Sebz IW4X GSC Bridge</Product>
+    <Description>IW4MAdmin bridge commands for Sebz IW4X GSC scripts.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RaidMax.IW4MAdmin.SharedLibraryCore" Version="2026.1.6.1" PrivateAssets="All" />
+  </ItemGroup>
+
+</Project>

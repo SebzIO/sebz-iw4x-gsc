@@ -1,0 +1,67 @@
+# Sebz IW4X GSC
+
+Custom IW4X GSC scripts and the IW4MAdmin bridge plugin used to expose admin-only commands for those scripts.
+
+## Contents
+
+- `src/SebzGscBridge` - IW4MAdmin plugin DLL source.
+- `gsc/esp/sebz_esp.gsc` - Senior Administrator+ ESP observer marker script.
+- `gsc/rust-snipers/rust_snipers.gsc` - Rust snipers-only rules script.
+- `examples/` - example server config snippets.
+- `docs/install.md` - install and update notes.
+
+## Current Features
+
+### ESP Observer
+
+Adds `!esp` with alias `!wh` through IW4MAdmin.
+
+The command is restricted to `SeniorAdmin` and above. It toggles a private target marker overlay for the command executor by setting a server dvar that `sebz_esp.gsc` watches.
+
+Known limitation: current server-side GSC rendering can reliably attach waypoint-style markers to players. True rectangular player boxes were tested and did not render through this GSC HUD path.
+
+### Rust Snipers Only
+
+Enforces a sniper-only Rust ruleset, keeps pistols empty for knife use, disables deathstreaks, and preserves selected sniper variants when possible.
+
+## Build
+
+```bash
+dotnet build SebzIw4xGsc.slnx -c Release
+```
+
+The bridge DLL is produced at:
+
+```text
+src/SebzGscBridge/bin/Release/net10.0/SebzGscBridge.dll
+```
+
+## Package A Release
+
+```bash
+scripts/package-release.sh
+```
+
+Release files are written to:
+
+```text
+artifacts/release/
+```
+
+## Quick Install
+
+Copy the bridge DLL into IW4MAdmin:
+
+```bash
+cp src/SebzGscBridge/bin/Release/net10.0/SebzGscBridge.dll /path/to/iw4madmin/Plugins/
+```
+
+Copy GSC scripts into each IW4X server that should use them:
+
+```bash
+cp gsc/esp/sebz_esp.gsc /path/to/iw4x/userraw/scripts/
+```
+
+Restart IW4MAdmin after replacing the DLL. Restart or rotate maps on the IW4X server after replacing GSC scripts.
+
+See [docs/install.md](docs/install.md) for more detail.
