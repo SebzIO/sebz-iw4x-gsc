@@ -25,6 +25,7 @@ public sealed class Plugin : IPluginV2
     public static void RegisterDependencies(IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<IManagerCommand, EspCommand>();
+        serviceCollection.AddSingleton<IManagerCommand, VisibilityCommand>();
     }
 
     private Task OnLoad(IManager manager, CancellationToken token)

@@ -6,6 +6,7 @@ Custom IW4X GSC scripts and the IW4MAdmin bridge plugin used to expose admin-onl
 
 - `src/SebzGscBridge` - IW4MAdmin plugin DLL source.
 - `gsc/esp/sebz_esp.gsc` - Senior Administrator+ ESP observer marker script.
+- `gsc/visibility/sebz_visibility.gsc` - public clear visibility mode script.
 - `gsc/rust-snipers/rust_snipers.gsc` - Rust snipers-only rules script.
 - `examples/` - example server config snippets.
 - `docs/install.md` - install and update notes.
@@ -23,6 +24,19 @@ Known limitation: current server-side GSC rendering can reliably attach waypoint
 ### Rust Snipers Only
 
 Enforces a sniper-only Rust ruleset, keeps pistols empty for knife use, disables deathstreaks, and preserves selected sniper variants when possible.
+
+### Clear Visibility
+
+Adds `!vis` with alias `!visibility` through IW4MAdmin, and also lets players toggle the same mode with the top-row `3` key.
+
+The mode toggles client-side visual settings intended to reduce haze and increase map clarity:
+
+- `r_fog`
+- `r_fullbright`
+- `r_glow`
+- `r_distortion`
+
+This is available to all players.
 
 ## Build
 
@@ -60,6 +74,7 @@ Copy GSC scripts into each IW4X server that should use them:
 
 ```bash
 cp gsc/esp/sebz_esp.gsc /path/to/iw4x/userraw/scripts/
+cp gsc/visibility/sebz_visibility.gsc /path/to/iw4x/userraw/scripts/
 ```
 
 Restart IW4MAdmin after replacing the DLL. Restart or rotate maps on the IW4X server after replacing GSC scripts.

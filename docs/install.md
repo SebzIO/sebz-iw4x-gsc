@@ -54,6 +54,38 @@ SeniorAdmin
 
 Owners are above `SeniorAdmin` and are allowed.
 
+## Install Clear Visibility
+
+Copy the visibility GSC onto any IW4X server where clear visibility should work:
+
+```bash
+cp gsc/visibility/sebz_visibility.gsc /path/to/iw4x/userraw/scripts/
+```
+
+Restart the IW4X server or wait for a map reload so the script compiles and runs.
+
+Players can toggle clear visibility with:
+
+```text
+!vis
+```
+
+Alias:
+
+```text
+!visibility
+```
+
+They can also press top-row `3`, which is `+actionslot 3` in IW4X.
+
+Minimum IW4MAdmin permission:
+
+```text
+User
+```
+
+The script toggles `r_fog`, `r_fullbright`, `r_glow`, and `r_distortion`.
+
 ## ESP Dvars
 
 ```text
