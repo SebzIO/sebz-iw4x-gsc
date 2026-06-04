@@ -11,6 +11,7 @@ dotnet build "$root_dir/SebzIw4xGsc.slnx" -c Release
 
 cp "$root_dir/src/SebzGscBridge/bin/Release/net10.0/SebzGscBridge.dll" "$artifact_dir/Plugins/"
 cp "$root_dir/gsc/esp/sebz_esp.gsc" "$artifact_dir/scripts/"
+cp "$root_dir/gsc/spectator/sebz_spectator.gsc" "$artifact_dir/scripts/"
 cp "$root_dir/gsc/visibility/sebz_visibility.gsc" "$artifact_dir/scripts/"
 cp "$root_dir/gsc/rust-snipers/rust_snipers.gsc" "$artifact_dir/scripts/"
 cp "$root_dir/README.md" "$artifact_dir/"

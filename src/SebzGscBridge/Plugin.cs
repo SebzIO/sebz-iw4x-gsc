@@ -26,6 +26,7 @@ public sealed class Plugin : IPluginV2
     {
         serviceCollection.AddSingleton<IManagerCommand, EspCommand>();
         serviceCollection.AddSingleton<IManagerCommand, VisibilityCommand>();
+        serviceCollection.AddSingleton<IManagerCommand, WatchCommand>();
     }
 
     private Task OnLoad(IManager manager, CancellationToken token)
