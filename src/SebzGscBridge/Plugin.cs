@@ -25,6 +25,8 @@ public sealed class Plugin : IPluginV2
     public static void RegisterDependencies(IServiceCollection serviceCollection)
     {
         serviceCollection.AddSingleton<IManagerCommand, EspCommand>();
+        serviceCollection.AddSingleton<IManagerCommand, EspReferenceCommand>();
+        serviceCollection.AddSingleton<IManagerCommand, EspReferenceClearCommand>();
         serviceCollection.AddSingleton<IManagerCommand, VisibilityCommand>();
         serviceCollection.AddSingleton<IManagerCommand, WatchCommand>();
     }

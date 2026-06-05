@@ -5,10 +5,13 @@
 init()
 {
     SetDvarIfUninitialized("sebz_esp_request", "");
+    SetDvarIfUninitialized("sebz_esp_reference_request", "");
     SetDvarIfUninitialized("sebz_esp_debug", 0);
 
     level.sebzEspLastRequest = "";
+    level.sebzEspLastReferenceRequest = "";
     level thread SebzEspMonitorRequests();
+    level thread SebzEspMonitorReferenceRequests();
 }
 
 SebzEspMonitorRequests()
@@ -22,6 +25,23 @@ SebzEspMonitorRequests()
             level.sebzEspLastRequest = request;
             level thread SebzEspHandleRequest(request);
             setDvar("sebz_esp_request", "");
+        }
+
+        wait 0.25;
+    }
+}
+
+SebzEspMonitorReferenceRequests()
+{
+    for (;;)
+    {
+        request = getDvar("sebz_esp_reference_request");
+
+        if (request != "" && request != level.sebzEspLastReferenceRequest)
+        {
+            level.sebzEspLastReferenceRequest = request;
+            level thread SebzEspHandleReferenceRequest(request);
+            setDvar("sebz_esp_reference_request", "");
         }
 
         wait 0.25;
@@ -60,6 +80,55 @@ SebzEspHandleRequest(request)
     {
         printLn("[sebz_esp] no player matched guid " + guid + " slot " + slot);
     }
+}
+
+SebzEspHandleReferenceRequest(request)
+{
+    if (getDvarInt("sebz_esp_debug"))
+        printLn("[sebz_esp] reference request " + request);
+
+    parts = strTok(request, ":");
+    if (parts.size < 6)
+        return;
+
+    observerGuid = toLower(parts[1]);
+    observerSlot = int(parts[2]);
+    action = parts[3];
+    targetGuid = toLower(parts[4]);
+    targetSlot = int(parts[5]);
+
+    observer = SebzEspFindPlayer(observerSlot, observerGuid);
+    if (!isDefined(observer))
+        return;
+
+    if (!isDefined(observer.sebzEsp))
+        observer.sebzEsp = spawnStruct();
+
+    if (action == "clear")
+    {
+        observer.sebzEsp.reference = undefined;
+        observer iPrintlnBold("^1ESP reference cleared");
+        return;
+    }
+
+    target = SebzEspFindPlayer(targetSlot, targetGuid);
+    if (!isDefined(target))
+    {
+        observer iPrintlnBold("^1ESP reference target not found");
+        return;
+    }
+
+    observer.sebzEsp.reference = target;
+    observer iPrintlnBold("^2ESP reference: ^7" + target.name);
+}
+
+SebzEspFindPlayer(slot, guid)
+{
+    player = SebzEspFindPlayerBySlot(slot);
+    if (isDefined(player))
+        return player;
+
+    return SebzEspFindPlayerByGuid(guid);
 }
 
 SebzEspFindPlayerBySlot(slot)
@@ -116,6 +185,7 @@ SebzEspEnable()
     self thread SebzEspWatchDisable();
     self thread SebzEspWatchNewPlayers();
     self thread SebzEspWatchTeamChange();
+    self thread SebzEspDebugPanel();
 
     foreach (target in level.players)
     {
@@ -139,6 +209,12 @@ SebzEspDisable()
         }
 
         self.sebzEsp.icons = [];
+    }
+
+    if (isDefined(self.sebzEsp) && isDefined(self.sebzEsp.debugPanel))
+    {
+        self.sebzEsp.debugPanel destroy();
+        self.sebzEsp.debugPanel = undefined;
     }
 }
 
@@ -199,12 +275,14 @@ SebzEspWatchTarget(icon, target)
     self endon("sebz_esp_disable");
     target endon("disconnect");
 
-    target SebzEspWaittillAny("joined_team", "joined_spectators");
+    for (;;)
+    {
+        if (!isDefined(icon))
+            return;
 
-    if (isDefined(icon))
-        icon destroy();
-
-    self SebzEspAddTarget(target);
+        icon.color = self SebzEspColorForTarget(target);
+        wait 0.25;
+    }
 }
 
 SebzEspColorForTarget(target)
@@ -212,18 +290,96 @@ SebzEspColorForTarget(target)
     if (target == self)
         return (0.17, 0.96, 1);
 
-    if (self SebzEspIsTeammate(target))
+    reference = self SebzEspTeamReferencePlayer();
+
+    if (isDefined(reference) && target == reference)
+        return (0.17, 0.96, 1);
+
+    if (self SebzEspIsTeammate(target, reference))
         return (0.05, 0.79, 0.29);
 
     return (1, 0.29, 0.29);
 }
 
-SebzEspIsTeammate(player)
+SebzEspTeamReferencePlayer()
 {
-    if (!isDefined(player.team) || !isDefined(self.team))
+    if (isDefined(self.sebzEsp) && isDefined(self.sebzEsp.reference))
+        return self.sebzEsp.reference;
+
+    if (isDefined(self.spectatorclient) && self.spectatorclient >= 0)
+    {
+        player = SebzEspFindPlayerBySlot(self.spectatorclient);
+        if (isDefined(player) && player != self)
+            return player;
+    }
+
+    return self;
+}
+
+SebzEspDebugPanel()
+{
+    self endon("disconnect");
+    self endon("sebz_esp_disable");
+
+    for (;;)
+    {
+        if (!getDvarInt("sebz_esp_debug"))
+        {
+            if (isDefined(self.sebzEsp.debugPanel))
+            {
+                self.sebzEsp.debugPanel destroy();
+                self.sebzEsp.debugPanel = undefined;
+            }
+
+            wait 0.5;
+            continue;
+        }
+
+        if (!isDefined(self.sebzEsp.debugPanel))
+        {
+            self.sebzEsp.debugPanel = self createFontString("objective", 1.15);
+            self.sebzEsp.debugPanel setPoint("TOPLEFT", "TOPLEFT", 10, 110);
+            self.sebzEsp.debugPanel.hidewheninmenu = true;
+            self.sebzEsp.debugPanel.foreground = true;
+            self.sebzEsp.debugPanel.archived = false;
+            self.sebzEsp.debugPanel.sort = 30;
+            self.sebzEsp.debugPanel.alpha = 0.9;
+            self.sebzEsp.debugPanel.color = (1, 1, 1);
+        }
+
+        reference = self SebzEspTeamReferencePlayer();
+        referenceText = "self";
+        if (isDefined(reference) && reference != self)
+            referenceText = reference.name + " #" + reference getEntityNumber() + " " + SebzEspFieldText(reference.team);
+
+        self.sebzEsp.debugPanel setText(
+            "^3ESP debug"
+            + "\n^7team: ^5" + SebzEspFieldText(self.team)
+            + " ^7session: ^5" + SebzEspFieldText(self.sessionstate)
+            + "\n^7spectatorclient: ^5" + SebzEspFieldText(self.spectatorclient)
+            + "\n^7reference: ^5" + referenceText);
+
+        wait 0.25;
+    }
+}
+
+SebzEspFieldText(value)
+{
+    if (!isDefined(value))
+        return "undefined";
+
+    return value;
+}
+
+SebzEspIsTeammate(player, reference)
+{
+    if (!isDefined(reference))
+        reference = self;
+
+    if (!isDefined(player.team) || !isDefined(reference.team))
         return false;
 
-    if (self.team != "allies" && self.team != "axis")
+    if (reference.team != "allies" && reference.team != "axis")
         return false;
 
     if (player.team != "allies" && player.team != "axis")
@@ -232,7 +388,7 @@ SebzEspIsTeammate(player)
     if (!level.teamBased)
         return false;
 
-    return player.team == self.team;
+    return player.team == reference.team;
 }
 
 SebzEspWaittillAny(a, b)

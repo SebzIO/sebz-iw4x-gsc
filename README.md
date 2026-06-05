@@ -20,6 +20,8 @@ Adds `!esp` with alias `!wh` through IW4MAdmin.
 
 The command is restricted to `SeniorAdmin` and above. It toggles a private target marker overlay for the command executor by setting a server dvar that `sebz_esp.gsc` watches.
 
+Use `!whref <player>` or `!espref <player>` to color ESP markers from that player's team perspective. This is useful while using MW2's built-in spectator mode, because the followed spectator target is not exposed to server-side GSC. Use `!whclear` or `!espclear` to return to the default self/team perspective.
+
 Known limitation: current server-side GSC rendering can reliably attach waypoint-style markers to players. True rectangular player boxes were tested and did not render through this GSC HUD path.
 
 ### Spectator Toolkit
