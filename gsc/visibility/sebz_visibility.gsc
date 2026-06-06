@@ -30,7 +30,7 @@ SebzVisibilitySetupPlayer()
         self.sebzVisibility.active = false;
     }
 
-    self notifyOnPlayerCommand("sebz_visibility_key", "+actionslot 3");
+    self notifyOnPlayerCommand("sebz_visibility_key", "+actionslot 4");
     self thread SebzVisibilityKeyMonitor();
     self thread SebzVisibilitySpawnMonitor();
 }

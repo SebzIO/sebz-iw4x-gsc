@@ -76,7 +76,7 @@ Alias:
 !visibility
 ```
 
-They can also press top-row `3`, which is `+actionslot 3` in IW4X.
+They can also press top-row `4`, which is `+actionslot 4` in IW4X.
 
 Minimum IW4MAdmin permission:
 

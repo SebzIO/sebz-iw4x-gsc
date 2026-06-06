@@ -18,7 +18,7 @@ For clear visibility, the bridge writes:
 sebz_visibility_request=<timestamp>:<network-guid-hex>:<client-slot>
 ```
 
-The GSC also registers `+actionslot 3` with `notifyOnPlayerCommand`, so players can toggle it without IW4MAdmin chat commands.
+The GSC also registers `+actionslot 4` with `notifyOnPlayerCommand`, so players can toggle it without IW4MAdmin chat commands.
 
 ## Adding A New Command
 
